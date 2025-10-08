@@ -1,3 +1,5 @@
+import '@root/pico.pink.css';
+
 function App() {
   return <h1>Naimuri Tech Task</h1>;
 }
