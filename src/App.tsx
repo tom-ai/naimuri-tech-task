@@ -1,4 +1,5 @@
 import '@root/pico.pink.css';
+import '@root/globals.css';
 import Header from './components/Header';
 import UserSearch from './components/UserSearch';
 import RepoList from './components/RepoList';
@@ -17,13 +18,11 @@ function App() {
   const [query, setQuery] = useState<string>('tom-ai');
   const [submittedQuery, setSubmittedQuery] = useState<string>('');
 
-  type User = {
-    name: string;
-    login: string;
-    html_url: string;
-  };
+  const [repos, setRepos] = useState<Repo[]>([]);
 
-  const [user, setUser] = useState<User | null>(null);
+  // const userExists = submittedQuery && user !== null;
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (submittedQuery) {
@@ -33,15 +32,28 @@ function App() {
           if (!response.ok) {
             throw Error('Network error');
           }
+
           return response.json();
         })
         .then((data) => {
-          setUser({
-            name: data.name,
-            login: data.login,
-            html_url: data.html_url,
-          });
-          console.log(data);
+          // todo: type github response, put away in helper
+          const mappedRepos: Repo[] = data.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (repo: any): Repo => ({
+              id: repo.id,
+              fullName: repo.full_name,
+              htmlUrl: repo.html_url,
+              owner: {
+                login: repo.owner.login,
+                htmlUrl: repo.owner.html_url,
+              },
+              forks: repo.forks_count,
+              stars: repo.stargazers_count,
+              issues: repo.open_issues_count,
+            })
+          );
+          console.log(mappedRepos);
+          setRepos(mappedRepos);
         })
         .catch((err) => {
           setRepos([]);
@@ -62,10 +74,13 @@ function App() {
   return (
     <>
       <Header />
-      <UserSearch value={query} onChange={setQuery} onSubmit={handleSubmit}
+      <UserSearch
+        value={query}
+        onChange={setQuery}
+        onSubmit={handleSubmit}
         isLoading={isLoading}
-/>
-      <RepoList />
+      />
+      {repos && <RepoList repos={repos} />}
     </>
   );
 }
