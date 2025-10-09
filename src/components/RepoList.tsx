@@ -1,5 +1,5 @@
 import type { Repo } from '@root/types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 
 type RepoListProps = {
@@ -7,12 +7,36 @@ type RepoListProps = {
 };
 export default function RepoList({ repos }: RepoListProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [markdownData, setMarkdownData] = useState<string | null>(null);
 
-  function handleClick() {
-    setIsOpen(!isOpen);
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    // search the github api /contents root folder
+
+    // if there's a readme
+    // download readme into localstorage
+    // somehow save it into this apps state
+    // open the modal when it's loaded
+
+    // if no readme found, notify user
+
+    setMarkdownData('## Secondary title'); // mock some markdown data
+    setIsOpen(true);
   }
 
-  const markdownTemp = '## Secondary title';
+  const dialogRef = useRef<null | HTMLDialogElement>(null);
+
+  function handleClose() {
+    // cleanup the DOM, removing the readme with useRef
+
+    if (dialogRef.current) {
+      dialogRef.current.remove();
+    }
+
+    setMarkdownData(null);
+    setIsOpen(false);
+  }
 
   return (
     <ul>
@@ -51,22 +75,26 @@ export default function RepoList({ repos }: RepoListProps) {
             </dl>
             {repo.description}
             <footer>
-              <button onClick={handleClick}>Find Readme</button>
-              <dialog open={isOpen}>
-                <article>
-                  <header>
-                    <button
-                      aria-label="close"
-                      rel="prev"
-                      onClick={handleClick}
-                    ></button>
-                    <p>
-                      <strong>Readme</strong>
-                    </p>
-                    <Markdown>{markdownTemp}</Markdown>
-                  </header>
-                </article>
-              </dialog>
+              <form onSubmit={(e) => handleSubmit(e)}>
+                <button type="submit">Find Readme</button>
+              </form>
+              {markdownData && (
+                <dialog open={isOpen} ref={dialogRef}>
+                  <article>
+                    <header>
+                      <button
+                        aria-label="close"
+                        rel="prev"
+                        onClick={handleClose}
+                      ></button>
+                      <p>
+                        <strong>Readme</strong>
+                      </p>
+                      <Markdown>{markdownData}</Markdown>
+                    </header>
+                  </article>
+                </dialog>
+              )}
             </footer>
           </article>
         </li>
