@@ -22,6 +22,7 @@ function App() {
   // const userExists = submittedQuery && user !== null;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (submittedQuery) {
@@ -29,7 +30,7 @@ function App() {
       fetch(`https://api.github.com/users/${submittedQuery}/repos`)
         .then((response) => {
           if (!response.ok) {
-            throw Error('Network error');
+            throw new Error('Something went wrong fetching repos');
           }
 
           return response.json();
@@ -38,9 +39,9 @@ function App() {
           const mappedRepos = mapGitHubRepos(data);
           setRepos(mappedRepos);
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           setRepos([]);
-          console.log(err);
+          setError(err.message);
         })
         .finally(() => {
           setIsLoading(false);
@@ -63,6 +64,7 @@ function App() {
         onSubmit={handleSubmit}
         isLoading={isLoading}
       />
+      {error && <p>{error}</p>}
       {repos && <RepoList repos={repos} />}
     </>
   );
