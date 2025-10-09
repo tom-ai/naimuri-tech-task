@@ -39,6 +39,7 @@ export default function RepoList({ repos }: RepoListProps) {
                 <dd>{String(repo.issues)}</dd>
               </div>
             </dl>
+            {repo.description}
             <footer></footer>
           </article>
         </li>
