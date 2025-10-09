@@ -1,5 +1,5 @@
 import type { Repo } from '@root/types';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import ReadmeDialog from './ReadmeDialog';
 
 type RepoListProps = {
@@ -9,7 +9,7 @@ export default function RepoList({ repos }: RepoListProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [markdownData, setMarkdownData] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleClick(e: React.FormEvent) {
     e.preventDefault();
 
     // search the github api /contents root folder
@@ -20,6 +20,8 @@ export default function RepoList({ repos }: RepoListProps) {
     // open the modal when it's loaded
 
     // if no readme found, notify user
+
+    // no need! Just hit the readme endpoint haha
 
     setMarkdownData('## Secondary title'); // mock some markdown data
     setIsOpen(true);
@@ -67,13 +69,14 @@ export default function RepoList({ repos }: RepoListProps) {
             </dl>
             {repo.description}
             <footer>
-              <form onSubmit={(e) => handleSubmit(e)}>
-                <button type="submit">Find Readme</button>
-              </form>
+              <button type="submit" onClick={(e) => handleClick(e)}>
+                Find Readme
+              </button>
               <ReadmeDialog
                 isOpen={isOpen}
                 markdownData={markdownData}
                 handleClose={handleClose}
+                repo={repo}
               />
             </footer>
           </article>
