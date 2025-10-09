@@ -3,6 +3,8 @@ import Header from './components/Header';
 import UserSearch from './components/UserSearch';
 import RepoList from './components/RepoList';
 import { useEffect, useState } from 'react';
+import type { Owner, Repo } from './types';
+import type { version } from 'node:punycode';
 
 function App() {
   // on first load - no search been made - todo
@@ -25,7 +27,8 @@ function App() {
 
   useEffect(() => {
     if (submittedQuery) {
-      fetch(`https://api.github.com/users/${submittedQuery}`)
+      setIsLoading(true);
+      fetch(`https://api.github.com/users/${submittedQuery}/repos`)
         .then((response) => {
           if (!response.ok) {
             throw Error('Network error');
@@ -40,7 +43,14 @@ function App() {
           });
           console.log(data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          setRepos([]);
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          setSubmittedQuery('');
+        });
     }
   }, [submittedQuery]);
 
@@ -52,7 +62,9 @@ function App() {
   return (
     <>
       <Header />
-      <UserSearch value={query} onChange={setQuery} onSubmit={handleSubmit} />
+      <UserSearch value={query} onChange={setQuery} onSubmit={handleSubmit}
+        isLoading={isLoading}
+/>
       <RepoList />
     </>
   );

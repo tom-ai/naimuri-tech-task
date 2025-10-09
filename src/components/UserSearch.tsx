@@ -2,13 +2,14 @@ type UserSearchProps = {
   value: string;
   onChange: (e: string) => void;
   onSubmit: (e: React.FormEvent) => void;
-  //to-do: onSubmit
+  isLoading: boolean;
 };
 
 export default function UserSearch({
   value,
   onChange,
   onSubmit,
+  isLoading,
 }: UserSearchProps) {
   return (
     <form onSubmit={(e) => onSubmit(e)}>
@@ -19,7 +20,9 @@ export default function UserSearch({
         onChange={(e) => onChange(e.target.value)}
         value={value}
       />
-      <input type="submit" value="Get Repos" />
+      <button type="submit" disabled={isLoading} aria-busy={isLoading}>
+        Get Repos
+      </button>
     </form>
   );
 }
