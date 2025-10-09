@@ -12,21 +12,20 @@ export default function RepoList({ repos }: RepoListProps) {
             <header>
               <div>
                 <span>
-                  <a target="_blank" href={repo.owner.htmlUrl}>
+                  <a target="_blank" href={repo.owner.htmlUrl} rel="noopener">
                     <span className="sr-only">Author: </span>
                     {repo.owner.login}
                   </a>
                 </span>
-                <span>
-                  <a target="_blank" href={repo.htmlUrl}>
-                    <span className="sr-only">Repository: </span>
-                    {repo.htmlUrl}
-                  </a>
-                </span>
               </div>
+              <h2>
+                <a href={repo.htmlUrl} target="_blank" rel="noopener">
+                  <span className="sr-only">Repository: </span>
+                  {repo.fullName}
+                </a>
+              </h2>
             </header>
-            <h2>{repo.fullName}</h2>
-            <dl role="group">
+            <dl aria-label="Repository stats" role="group">
               <div>
                 <dt>Stars</dt>
                 <dd>{String(repo.stars)}</dd>
