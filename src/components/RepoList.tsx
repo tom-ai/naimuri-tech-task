@@ -6,31 +6,25 @@ type RepoListProps = {
   repos: Repo[];
 };
 export default function RepoList({ repos }: RepoListProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [markdownData, setMarkdownData] = useState<string | null>(null);
+  //   function handleClick(e: React.FormEvent) {
+  //     e.preventDefault();
 
-  function handleClick(e: React.FormEvent) {
-    e.preventDefault();
+  //     // search the github api /contents root folder
 
-    // search the github api /contents root folder
+  //     // if there's a readme
+  //     // download readme into localstorage
+  //     // somehow save it into this apps state
+  //     // open the modal when it's loaded
 
-    // if there's a readme
-    // download readme into localstorage
-    // somehow save it into this apps state
-    // open the modal when it's loaded
+  //     // if no readme found, notify user
 
-    // if no readme found, notify user
+  //     // no need! Just hit the readme endpoint haha
 
-    // no need! Just hit the readme endpoint haha
+  //     setMarkdownData('## Secondary title'); // mock some markdown data
+  //     setIsOpen(true);
+  //   }
 
-    setMarkdownData('## Secondary title'); // mock some markdown data
-    setIsOpen(true);
-  }
-
-  function handleClose() {
-    setMarkdownData(null);
-    setIsOpen(false);
-  }
+  const [activeRepoId, setActiveRepoId] = useState<string | null>(null);
 
   return (
     <ul>
@@ -69,13 +63,14 @@ export default function RepoList({ repos }: RepoListProps) {
             </dl>
             {repo.description}
             <footer>
-              <button type="submit" onClick={(e) => handleClick(e)}>
+              <button onClick={() => setActiveRepoId(repo.id)}>
                 Find Readme
               </button>
               <ReadmeDialog
-                isOpen={isOpen}
-                markdownData={markdownData}
-                handleClose={handleClose}
+                isOpen={activeRepoId === repo.id}
+                onClose={() => {
+                  setActiveRepoId(null);
+                }}
                 repo={repo}
               />
             </footer>
