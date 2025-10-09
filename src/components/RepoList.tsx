@@ -6,45 +6,29 @@ type RepoListProps = {
   repos: Repo[];
 };
 export default function RepoList({ repos }: RepoListProps) {
-  //   function handleClick(e: React.FormEvent) {
-  //     e.preventDefault();
-
-  //     // search the github api /contents root folder
-
-  //     // if there's a readme
-  //     // download readme into localstorage
-  //     // somehow save it into this apps state
-  //     // open the modal when it's loaded
-
-  //     // if no readme found, notify user
-
-  //     // no need! Just hit the readme endpoint haha
-
-  //     setMarkdownData('## Secondary title'); // mock some markdown data
-  //     setIsOpen(true);
-  //   }
-
   const [activeRepoId, setActiveRepoId] = useState<string | null>(null);
 
   return (
-    <ul>
+    <ul className="reset-list-style">
       {repos.map((repo) => (
         <li key={repo.id}>
           <article>
             <header>
-              <div>
+              <div></div>
+              <h2>
                 <span>
                   <a target="_blank" href={repo.owner.htmlUrl} rel="noopener">
                     <span className="sr-only">Author: </span>
                     {repo.owner.login}
                   </a>
                 </span>
-              </div>
-              <h2>
-                <a href={repo.htmlUrl} target="_blank" rel="noopener">
-                  <span className="sr-only">Repository: </span>
-                  {repo.fullName}
-                </a>
+                <span className="link-color">{' / '}</span>
+                <span>
+                  <a href={repo.htmlUrl} target="_blank" rel="noopener">
+                    <span className="sr-only">Repository: </span>
+                    {repo.name}
+                  </a>
+                </span>
               </h2>
             </header>
             <dl aria-label="Repository stats" role="group">

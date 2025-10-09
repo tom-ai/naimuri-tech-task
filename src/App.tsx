@@ -24,30 +24,46 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (submittedQuery) {
-      setIsLoading(true);
-      fetch(`https://api.github.com/users/${submittedQuery}/repos`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Something went wrong fetching repos');
-          }
+  async function getRepos(): Promise<GitHubRepo[]> {
+    const url = `https://api.github.com/users/${submittedQuery}/repos`;
 
-          return response.json();
-        })
-        .then((data: GitHubRepo[]) => {
-          const mappedRepos = mapGitHubRepos(data);
-          setRepos(mappedRepos);
-        })
-        .catch((err: Error) => {
-          setRepos([]);
-          setError(err.message);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setSubmittedQuery('');
-        });
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error('Something went wrong fetching repos');
     }
+
+    const data = response.json();
+    return data;
+  }
+
+  useEffect(() => {
+    if (!submittedQuery) {
+      setRepos([]);
+      return;
+    }
+
+    const fetchRepos = async () => {
+      setIsLoading(true);
+      setError('');
+
+      try {
+        const repos = await getRepos();
+        const mappedRepos = mapGitHubRepos(repos);
+
+        // get languages used
+        // setLanguages
+        setRepos(mappedRepos);
+      } catch {
+        //setLanguages([])
+        setRepos([]);
+        setError('Something else went wrong');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRepos();
   }, [submittedQuery]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -58,14 +74,17 @@ function App() {
   return (
     <>
       <Header />
-      <UserSearch
-        value={query}
-        onChange={setQuery}
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-      />
-      {error && <p>{error}</p>}
-      {repos && <RepoList repos={repos} />}
+      <main>
+        <UserSearch
+          value={query}
+          onChange={setQuery}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+        />
+        <h1>Repositories by {query} </h1>
+        {error && <p>{error}</p>}
+        {repos.length > 0 && <RepoList repos={repos} />}
+      </main>
     </>
   );
 }

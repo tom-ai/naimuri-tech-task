@@ -14,10 +14,12 @@ export default function ReadmeDialog({
   repo,
 }: ReadmeDialogProps) {
   const [markdownData, setMarkdownData] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
-  async function getReadme(repo: Repo) {
+  async function getReadme(repo: Repo): Promise<string> {
     const url = `https://api.github.com/repos/${repo.owner.login}/${repo.name}/readme`;
 
     const response = await fetch(url, {
@@ -38,11 +40,17 @@ export default function ReadmeDialog({
       dialog.showModal();
 
       const fetchReadme = async () => {
+        setIsLoading(true);
+        setError('');
+
         try {
           const markdown = await getReadme(repo);
           setMarkdownData(markdown);
         } catch {
-          setError('Error');
+          setMarkdownData('');
+          setError('Something went wrong displaying the Readme');
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -53,7 +61,6 @@ export default function ReadmeDialog({
     }
 
     const handleClose = () => {
-      console.log('dialog closed with esc');
       onClose();
     };
 
@@ -65,17 +72,26 @@ export default function ReadmeDialog({
   }, [isOpen, onClose, repo]);
 
   return (
-    <dialog ref={dialogRef}>
-      <article>
-        <header>
-          <button aria-label="close" rel="prev" onClick={onClose}></button>
-          <p>
-            <strong>Readme</strong>
-          </p>
-          <p>{repo.name}</p>
-          {markdownData && <Markdown>{markdownData}</Markdown>}
-        </header>
-      </article>
+    <dialog ref={dialogRef} aria-busy={isLoading}>
+      {error && <p>{error}</p>}
+      {markdownData && (
+        <article>
+          <header>
+            <button aria-label="close" rel="prev" onClick={onClose}></button>
+            <p>
+              <span className="sr-only">Repository: </span>
+              <strong>{repo.name}</strong>
+            </p>
+            <a href={repo.htmlUrl}>View this repo on GitHub</a>
+          </header>
+          <Markdown>{markdownData}</Markdown>
+          <footer>
+            <button className="outline" onClick={onClose}>
+              Close
+            </button>
+          </footer>
+        </article>
+      )}
     </dialog>
   );
 }
