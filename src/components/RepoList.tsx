@@ -1,6 +1,6 @@
 import type { Repo } from '@root/types';
 import { useEffect, useRef, useState } from 'react';
-import Markdown from 'react-markdown';
+import ReadmeDialog from './ReadmeDialog';
 
 type RepoListProps = {
   repos: Repo[];
@@ -25,15 +25,7 @@ export default function RepoList({ repos }: RepoListProps) {
     setIsOpen(true);
   }
 
-  const dialogRef = useRef<null | HTMLDialogElement>(null);
-
   function handleClose() {
-    // cleanup the DOM, removing the readme with useRef
-
-    if (dialogRef.current) {
-      dialogRef.current.remove();
-    }
-
     setMarkdownData(null);
     setIsOpen(false);
   }
@@ -78,23 +70,11 @@ export default function RepoList({ repos }: RepoListProps) {
               <form onSubmit={(e) => handleSubmit(e)}>
                 <button type="submit">Find Readme</button>
               </form>
-              {markdownData && (
-                <dialog open={isOpen} ref={dialogRef}>
-                  <article>
-                    <header>
-                      <button
-                        aria-label="close"
-                        rel="prev"
-                        onClick={handleClose}
-                      ></button>
-                      <p>
-                        <strong>Readme</strong>
-                      </p>
-                      <Markdown>{markdownData}</Markdown>
-                    </header>
-                  </article>
-                </dialog>
-              )}
+              <ReadmeDialog
+                isOpen={isOpen}
+                markdownData={markdownData}
+                handleClose={handleClose}
+              />
             </footer>
           </article>
         </li>
