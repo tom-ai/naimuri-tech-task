@@ -1,9 +1,19 @@
 import type { Repo } from '@root/types';
+import { useState } from 'react';
+import Markdown from 'react-markdown';
 
 type RepoListProps = {
   repos: Repo[];
 };
 export default function RepoList({ repos }: RepoListProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  function handleClick() {
+    setIsOpen(!isOpen);
+  }
+
+  const markdownTemp = '## Secondary title';
+
   return (
     <ul>
       {repos.map((repo) => (
@@ -40,7 +50,24 @@ export default function RepoList({ repos }: RepoListProps) {
               </div>
             </dl>
             {repo.description}
-            <footer></footer>
+            <footer>
+              <button onClick={handleClick}>Find Readme</button>
+              <dialog open={isOpen}>
+                <article>
+                  <header>
+                    <button
+                      aria-label="close"
+                      rel="prev"
+                      onClick={handleClick}
+                    ></button>
+                    <p>
+                      <strong>Readme</strong>
+                    </p>
+                    <Markdown>{markdownTemp}</Markdown>
+                  </header>
+                </article>
+              </dialog>
+            </footer>
           </article>
         </li>
       ))}
