@@ -3,9 +3,10 @@ import '@root/globals.css';
 import Header from './components/Header';
 import UserSearch from './components/UserSearch';
 import RepoList from './components/RepoList';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { mapGitHubRepos, type GitHubRepo, type Repo } from './types';
 import Filters from './components/Filters';
+import { getLanguagesUsed } from './utils/helpers';
 
 function App() {
   // on first load - no search been made - todo
@@ -19,8 +20,9 @@ function App() {
   const [submittedQuery, setSubmittedQuery] = useState<string>('');
 
   const [repos, setRepos] = useState<Repo[]>([]);
+  const [languages, setLanguages] = useState<string[]>([]);
 
-  // const userExists = submittedQuery && user !== null;
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState('');
@@ -41,6 +43,8 @@ function App() {
   useEffect(() => {
     if (!submittedQuery) {
       setRepos([]);
+      setLanguages([]);
+      setSelectedLanguages([]);
       return;
     }
 
@@ -51,12 +55,14 @@ function App() {
       try {
         const repos = await getRepos();
         const mappedRepos = mapGitHubRepos(repos);
+        const languages = getLanguagesUsed(mappedRepos);
 
-        // get languages used
-        // setLanguages
         setRepos(mappedRepos);
+        setLanguages(languages);
+        setSelectedLanguages([]); //setSelectedLanguages(prev => prev.filter(l => langs.includes(l)));
       } catch {
-        //setLanguages([])
+        setLanguages([]);
+        setSelectedLanguages([]);
         setRepos([]);
         setError('Something else went wrong');
       } finally {
@@ -66,6 +72,26 @@ function App() {
 
     fetchRepos();
   }, [submittedQuery]);
+
+  const filteredRepos = useMemo(() => {
+    if (selectedLanguages.length === 0) return [];
+
+    return repos.filter(
+      (repo) => repo.language && selectedLanguages.includes(repo.language)
+    );
+  }, [selectedLanguages, repos]);
+
+  // useEffect(() => {
+
+  // }, [lang])
+
+  function handleToggle(language: string, checked: boolean) {
+    setSelectedLanguages((prev) => {
+      return checked
+        ? [...prev, language]
+        : [...prev.filter((lang) => lang !== language)];
+    });
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -82,10 +108,14 @@ function App() {
           onSubmit={handleSubmit}
           isLoading={isLoading}
         />
-        <Filters repos={repos} />
+        <Filters
+          languages={languages}
+          handleToggle={handleToggle}
+          selectedLanguages={selectedLanguages}
+        />
         <h1>Repositories by {query} </h1>
         {error && <p>{error}</p>}
-        {repos.length > 0 && <RepoList repos={repos} />}
+        {filteredRepos.length > 0 && <RepoList repos={filteredRepos} />}
       </main>
     </>
   );
