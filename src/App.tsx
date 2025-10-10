@@ -95,7 +95,8 @@ function App() {
         <section aria-label="Welcome">
           <h2>GitHub Repository Explorer</h2>
           <p>
-            Start by searching for a GitHub user to explore their repositories
+            Start by searching for a GitHub user to explore their public
+            repositories
           </p>
         </section>
       );
@@ -112,7 +113,9 @@ function App() {
     if (repos.length === 0 && !isLoading) {
       return (
         <section aria-label="No results">
-          <p role="alert">No repositories found for {searchState.query}</p>
+          <p role="alert">
+            No public repositories found for {searchState.query}
+          </p>
         </section>
       );
     }
@@ -120,14 +123,16 @@ function App() {
     if (!isLoading) {
       return (
         <section aria-label="Repository results">
-          <h1>Repositories by {searchState.query} </h1>
-          <aside aria-label="Language filters">
-            <Filters
-              languages={languages}
-              handleToggle={handleToggle}
-              selectedLanguages={selectedLanguages}
-            />
-          </aside>
+          <h1>Public Repositories by {searchState.query} </h1>
+          {languages.length > 0 && (
+            <aside aria-label="Language filters">
+              <Filters
+                languages={languages}
+                handleToggle={handleToggle}
+                selectedLanguages={selectedLanguages}
+              />
+            </aside>
+          )}
           <RepoList repos={filteredRepos} />
         </section>
       );
