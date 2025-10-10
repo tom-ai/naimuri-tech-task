@@ -13,6 +13,7 @@ export type Repo = {
   issues: number;
   stars: number;
   forks: number;
+  language?: string;
 };
 
 type GitHubOwner = {
@@ -30,7 +31,10 @@ export type GitHubRepo = {
   open_issues_count: number;
   stargazers_count: number;
   forks_count: number;
+  language?: string;
 };
+
+export type RepoLanguageOnly = Pick<Repo, 'language'>;
 
 export function mapGitHubRepos(repos: GitHubRepo[]): Repo[] {
   return repos.map((repo) => ({
@@ -46,5 +50,6 @@ export function mapGitHubRepos(repos: GitHubRepo[]): Repo[] {
     forks: repo.forks_count,
     stars: repo.stargazers_count,
     issues: repo.open_issues_count,
+    language: repo.language,
   }));
 }
