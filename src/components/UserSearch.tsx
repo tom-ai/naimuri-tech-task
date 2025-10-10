@@ -13,7 +13,7 @@ export default function UserSearch({
 }: UserSearchProps) {
   return (
     <form onSubmit={(e) => onSubmit(e)}>
-      <label htmlFor="user-search">Search for a user:</label>
+      <label htmlFor="user-search">Enter a GitHub username:</label>
       <input
         type="search"
         id="user-search"
