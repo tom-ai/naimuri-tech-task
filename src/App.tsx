@@ -123,7 +123,7 @@ function App() {
     if (!isLoading) {
       return (
         <section aria-label="Repository results">
-          <h1>Public Repositories by {searchState.query} </h1>
+          <h2>Public Repositories by {searchState.query} </h2>
           {languages.length > 0 && (
             <aside aria-label="Language filters">
               <Filters

@@ -25,14 +25,14 @@ export default function RepoList({ repos }: RepoListProps) {
                     </a>
                   </span>
                   <hgroup>
-                    <h2>
+                    <h3>
                       <span>
                         <a href={repo.htmlUrl} target="_blank" rel="noopener">
                           <span className="sr-only">Repository: </span>
                           {repo.name}
                         </a>
                       </span>
-                    </h2>
+                    </h3>
                     <p>{repo.description}</p>
                   </hgroup>
                 </div>

@@ -43,7 +43,7 @@ export default function Header() {
         <ul>
           <li>
             <span>
-              <strong>Naimuri Tech Task</strong>
+              <h1 style={{ marginBottom: 0 }}>Naimuri Tech Task</h1>
             </span>
           </li>
         </ul>
