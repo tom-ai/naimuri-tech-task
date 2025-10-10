@@ -18,6 +18,9 @@
   list-style: none;
 }
 
-.link-color {
-  color: var(--pico-primary);
+
+.inline-list {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
 }

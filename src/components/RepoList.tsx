@@ -13,25 +13,33 @@ export default function RepoList({ repos }: RepoListProps) {
       {repos.map((repo) => (
         <li key={repo.id}>
           <article>
-            <header>
-              <div></div>
-              <h2>
+            <header className="grid">
+              <div>
                 <span>
                   <a target="_blank" href={repo.owner.htmlUrl} rel="noopener">
                     <span className="sr-only">Author: </span>
                     {repo.owner.login}
                   </a>
                 </span>
-                <span className="link-color">{' / '}</span>
-                <span>
-                  <a href={repo.htmlUrl} target="_blank" rel="noopener">
-                    <span className="sr-only">Repository: </span>
-                    {repo.name}
-                  </a>
-                </span>
-              </h2>
+                <hgroup>
+                  <h2>
+                    <span>
+                      <a href={repo.htmlUrl} target="_blank" rel="noopener">
+                        <span className="sr-only">Repository: </span>
+                        {repo.name}
+                      </a>
+                    </span>
+                  </h2>
+                  <p>{repo.description}</p>
+                </hgroup>
+              </div>
             </header>
-            <dl aria-label="Repository stats" role="group">
+            <dl>
+              <dt>Language</dt>
+              <dd>{repo.language}</dd>
+            </dl>
+            <hr />
+            <dl aria-label="Repository stats" role="group" className="grid">
               <div>
                 <dt>Stars</dt>
                 <dd>{String(repo.stars)}</dd>
@@ -45,7 +53,6 @@ export default function RepoList({ repos }: RepoListProps) {
                 <dd>{String(repo.issues)}</dd>
               </div>
             </dl>
-            {repo.description}
             <footer>
               <button onClick={() => setActiveRepoId(repo.id)}>
                 Find Readme

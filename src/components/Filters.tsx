@@ -1,6 +1,3 @@
-import type { Repo } from '@root/types';
-import { getLanguagesUsed } from '@root/utils/helpers';
-
 type FiltersProps = {
   languages: string[];
   handleToggle: (lang: string, checked: boolean) => void;
@@ -15,8 +12,8 @@ export default function Filters({
   return (
     <form>
       <fieldset>
-        <legend>Select a language to filter by:</legend>
-        <ul className="reset-list-style">
+        <legend>Filter by language:</legend>
+        <ul className="reset-list-style inline-list">
           {languages.map((language, index) => {
             const checked = selectedLanguages.includes(language);
 

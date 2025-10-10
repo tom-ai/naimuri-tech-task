@@ -9,13 +9,12 @@ import Filters from './components/Filters';
 import { getLanguagesUsed } from './utils/helpers';
 
 function App() {
-  // on first load - no search been made - todo
-
-  // in response to searching - searching api
-  // in response to searching - no repos found
-  // in response to searching - repos found, display list
-  // in response to searching - error
-
+  function resetState() {
+    setRepos([]);
+    setLanguages([]);
+    setSelectedLanguages([]);
+    setError('');
+  }
   const [query, setQuery] = useState<string>('tom-ai');
   const [submittedQuery, setSubmittedQuery] = useState<string>('');
 
@@ -33,57 +32,22 @@ function App() {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error('Something went wrong fetching repos');
+      if (response.status === 404) {
+        throw new Error(`User: ${submittedQuery} not found`);
+      }
+      throw new Error('Failed to fetch repos');
     }
 
-    const data = response.json();
-    return data;
+    return response.json();
   }
 
-  useEffect(() => {
-    if (!submittedQuery) {
-      setRepos([]);
-      setLanguages([]);
-      setSelectedLanguages([]);
-      return;
-    }
-
-    const fetchRepos = async () => {
-      setIsLoading(true);
-      setError('');
-
-      try {
-        const repos = await getRepos();
-        const mappedRepos = mapGitHubRepos(repos);
-        const languages = getLanguagesUsed(mappedRepos);
-
-        setRepos(mappedRepos);
-        setLanguages(languages);
-        setSelectedLanguages([]); //setSelectedLanguages(prev => prev.filter(l => langs.includes(l)));
-      } catch {
-        setLanguages([]);
-        setSelectedLanguages([]);
-        setRepos([]);
-        setError('Something else went wrong');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRepos();
-  }, [submittedQuery]);
-
   const filteredRepos = useMemo(() => {
-    if (selectedLanguages.length === 0) return [];
+    if (selectedLanguages.length === 0) return repos;
 
     return repos.filter(
       (repo) => repo.language && selectedLanguages.includes(repo.language)
     );
   }, [selectedLanguages, repos]);
-
-  // useEffect(() => {
-
-  // }, [lang])
 
   function handleToggle(language: string, checked: boolean) {
     setSelectedLanguages((prev) => {
@@ -98,6 +62,67 @@ function App() {
     setSubmittedQuery(query);
   }
 
+  useEffect(() => {
+    if (!submittedQuery) {
+      resetState();
+      return;
+    }
+
+    const fetchRepos = async () => {
+      setIsLoading(true);
+      resetState();
+
+      try {
+        const repos = await getRepos();
+        const mappedRepos = mapGitHubRepos(repos);
+        const languages = getLanguagesUsed(mappedRepos);
+
+        setRepos(mappedRepos);
+        setLanguages(languages);
+      } catch {
+        setError('Something went wrong');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRepos();
+  }, [submittedQuery]);
+
+  const renderContent = () => {
+    if (!submittedQuery) {
+      return (
+        <div>
+          <h2>GitHub Repository Explorer</h2>
+          <p>
+            Start by searching for a GitHub user to explore their repositories
+          </p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return <p role="alert">{error}</p>;
+    }
+
+    if (repos.length === 0 && !isLoading) {
+      return <p role="alert">No repositories found for {submittedQuery}</p>;
+    }
+
+    if (!isLoading) {
+      return (
+        <>
+          <h1>Repositories by {submittedQuery} </h1>
+          <Filters
+            languages={languages}
+            handleToggle={handleToggle}
+            selectedLanguages={selectedLanguages}
+          />
+          <RepoList repos={filteredRepos} />
+        </>
+      );
+    }
+  };
   return (
     <>
       <Header />
@@ -108,14 +133,7 @@ function App() {
           onSubmit={handleSubmit}
           isLoading={isLoading}
         />
-        <Filters
-          languages={languages}
-          handleToggle={handleToggle}
-          selectedLanguages={selectedLanguages}
-        />
-        <h1>Repositories by {query} </h1>
-        {error && <p>{error}</p>}
-        {filteredRepos.length > 0 && <RepoList repos={filteredRepos} />}
+        {renderContent()}
       </main>
     </>
   );
