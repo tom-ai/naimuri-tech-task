@@ -16,13 +16,12 @@ export default function ReadmeDialog({
   const [markdownData, setMarkdownData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
-  const resetState = () => {
+  function resetState() {
     setMarkdownData(null);
     setError('');
-  };
+  }
 
   async function getReadme(repo: Repo): Promise<string> {
     const url = `https://api.github.com/repos/${repo.owner.login}/${repo.name}/readme`;

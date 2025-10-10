@@ -9,31 +9,31 @@ import Filters from './components/Filters';
 import { getLanguagesUsed } from './utils/helpers';
 
 function App() {
+  const [query, setQuery] = useState<string>('');
+  const [searchState, setSearchState] = useState<{ query: string }>({
+    query: '',
+  });
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [languages, setLanguages] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState('');
+
   function resetState() {
     setRepos([]);
     setLanguages([]);
     setSelectedLanguages([]);
     setError('');
   }
-  const [query, setQuery] = useState<string>('tom-ai');
-  const [submittedQuery, setSubmittedQuery] = useState<string>('');
-
-  const [repos, setRepos] = useState<Repo[]>([]);
-  const [languages, setLanguages] = useState<string[]>([]);
-
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState('');
 
   async function getRepos(): Promise<GitHubRepo[]> {
-    const url = `https://api.github.com/users/${submittedQuery}/repos`;
+    const url = `https://api.github.com/users/${searchState.query}/repos`;
 
     const response = await fetch(url);
 
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error(`User "${submittedQuery}" not found`);
+        throw new Error(`User "${searchState.query}" not found`);
       }
       throw new Error('Failed to fetch repos');
     }
@@ -59,11 +59,11 @@ function App() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmittedQuery(query);
+    setSearchState({ query });
   }
 
   useEffect(() => {
-    if (!submittedQuery) {
+    if (!searchState.query) {
       resetState();
       return;
     }
@@ -87,10 +87,10 @@ function App() {
     };
 
     fetchRepos();
-  }, [submittedQuery]);
+  }, [searchState]);
 
   const renderContent = () => {
-    if (!submittedQuery) {
+    if (!searchState.query) {
       return (
         <section aria-label="Welcome">
           <h2>GitHub Repository Explorer</h2>
@@ -112,7 +112,7 @@ function App() {
     if (repos.length === 0 && !isLoading) {
       return (
         <section aria-label="No results">
-          <p role="alert">No repositories found for {submittedQuery}</p>
+          <p role="alert">No repositories found for {searchState.query}</p>
         </section>
       );
     }
@@ -120,7 +120,7 @@ function App() {
     if (!isLoading) {
       return (
         <section aria-label="Repository results">
-          <h1>Repositories by {submittedQuery} </h1>
+          <h1>Repositories by {searchState.query} </h1>
           <aside aria-label="Language filters">
             <Filters
               languages={languages}
