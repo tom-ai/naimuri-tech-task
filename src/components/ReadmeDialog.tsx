@@ -91,7 +91,9 @@ export default function ReadmeDialog({
                 <span className="sr-only">Repository: </span>
                 <strong>{repo.name}</strong>
               </p>
-              <a href={repo.htmlUrl}>View this repo on GitHub</a>
+              <a target="__blank" href={repo.htmlUrl}>
+                View this repo on GitHub
+              </a>
             </header>
             <Markdown>{markdownData}</Markdown>
             <footer>
