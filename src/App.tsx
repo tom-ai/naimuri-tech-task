@@ -5,6 +5,7 @@ import UserSearch from './components/UserSearch';
 import RepoList from './components/RepoList';
 import { useEffect, useState } from 'react';
 import { mapGitHubRepos, type GitHubRepo, type Repo } from './types';
+import Filters from './components/Filters';
 
 function App() {
   // on first load - no search been made - todo
@@ -81,6 +82,7 @@ function App() {
           onSubmit={handleSubmit}
           isLoading={isLoading}
         />
+        <Filters repos={repos} />
         <h1>Repositories by {query} </h1>
         {error && <p>{error}</p>}
         {repos.length > 0 && <RepoList repos={repos} />}
