@@ -33,7 +33,7 @@ function App() {
 
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error(`User: ${submittedQuery} not found`);
+        throw new Error(`User "${submittedQuery}" not found`);
       }
       throw new Error('Failed to fetch repos');
     }
@@ -79,8 +79,8 @@ function App() {
 
         setRepos(mappedRepos);
         setLanguages(languages);
-      } catch {
-        setError('Something went wrong');
+      } catch (err) {
+        setError(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -92,37 +92,48 @@ function App() {
   const renderContent = () => {
     if (!submittedQuery) {
       return (
-        <div>
+        <section aria-label="Welcome">
           <h2>GitHub Repository Explorer</h2>
           <p>
             Start by searching for a GitHub user to explore their repositories
           </p>
-        </div>
+        </section>
       );
     }
 
     if (error) {
-      return <p role="alert">{error}</p>;
+      return (
+        <section aria-label="Error">
+          <p role="alert">{error}</p>
+        </section>
+      );
     }
 
     if (repos.length === 0 && !isLoading) {
-      return <p role="alert">No repositories found for {submittedQuery}</p>;
+      return (
+        <section aria-label="No results">
+          <p role="alert">No repositories found for {submittedQuery}</p>
+        </section>
+      );
     }
 
     if (!isLoading) {
       return (
-        <>
+        <section aria-label="Repository results">
           <h1>Repositories by {submittedQuery} </h1>
-          <Filters
-            languages={languages}
-            handleToggle={handleToggle}
-            selectedLanguages={selectedLanguages}
-          />
+          <aside aria-label="Language filters">
+            <Filters
+              languages={languages}
+              handleToggle={handleToggle}
+              selectedLanguages={selectedLanguages}
+            />
+          </aside>
           <RepoList repos={filteredRepos} />
-        </>
+        </section>
       );
     }
   };
+
   return (
     <>
       <Header />
@@ -133,6 +144,7 @@ function App() {
           onSubmit={handleSubmit}
           isLoading={isLoading}
         />
+
         {renderContent()}
       </main>
     </>

@@ -20,7 +20,11 @@ export default function UserSearch({
         onChange={(e) => onChange(e.target.value)}
         value={value}
       />
-      <button type="submit" disabled={isLoading} aria-busy={isLoading}>
+      <button
+        type="submit"
+        disabled={isLoading || value === ''}
+        aria-busy={isLoading}
+      >
         Get Repos
       </button>
     </form>
