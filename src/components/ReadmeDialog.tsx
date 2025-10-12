@@ -1,3 +1,4 @@
+import { ContentsApi } from '@root/apis/contents.api';
 import type { Repo } from '@root/types';
 import { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
@@ -15,29 +16,27 @@ export default function ReadmeDialog({
 }: ReadmeDialogProps) {
   const [markdownData, setMarkdownData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   function resetState() {
     setMarkdownData(null);
-    setError('');
   }
 
-  async function getReadme(repo: Repo): Promise<string> {
-    const url = `https://api.github.com/repos/${repo.owner.login}/${repo.name}/readme`;
+  useEffect(() => {
+    if (!repo) return;
+    setIsLoading(true);
 
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/vnd.github.raw+json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch Readme');
-    }
-
-    return response.text();
-  }
+    ContentsApi.getRepositoryReadme(repo)
+      .then((data) => {
+        setMarkdownData(data);
+      })
+      .catch((err) => {
+        console.warn(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [repo]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -51,22 +50,6 @@ export default function ReadmeDialog({
 
     dialog.showModal();
 
-    const fetchReadme = async () => {
-      setIsLoading(true);
-      resetState();
-
-      try {
-        const markdown = await getReadme(repo);
-        setMarkdownData(markdown);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchReadme();
-
     const handleClose = () => {
       onClose();
     };
@@ -76,33 +59,30 @@ export default function ReadmeDialog({
     return () => {
       dialog.removeEventListener('close', handleClose);
     };
-  }, [isOpen, onClose, repo]);
+  }, [isOpen, onClose]);
 
   return (
     <dialog ref={dialogRef} aria-busy={isLoading}>
-      {error ? (
-        <p>{error}</p>
-      ) : (
-        markdownData && (
-          <article>
-            <header>
-              <button aria-label="close" rel="prev" onClick={onClose}></button>
-              <p>
-                <span className="sr-only">Repository: </span>
-                <strong>{repo.name}</strong>
-              </p>
-              <a target="__blank" href={repo.htmlUrl}>
-                View this repo on GitHub
-              </a>
-            </header>
-            <Markdown>{markdownData}</Markdown>
-            <footer>
-              <button className="outline" onClick={onClose}>
-                Close
-              </button>
-            </footer>
-          </article>
-        )
+      {/* {error && <p role="alert">{error}</p>} */}
+      {markdownData && (
+        <article>
+          <header>
+            <button aria-label="close" rel="prev" onClick={onClose}></button>
+            <p>
+              <span className="sr-only">Repository: </span>
+              <strong>{repo.name}</strong>
+            </p>
+            <a target="__blank" href={repo.htmlUrl}>
+              View this repo on GitHub
+            </a>
+          </header>
+          <Markdown>{markdownData}</Markdown>
+          <footer>
+            <button className="outline" onClick={onClose}>
+              Close
+            </button>
+          </footer>
+        </article>
       )}
     </dialog>
   );
