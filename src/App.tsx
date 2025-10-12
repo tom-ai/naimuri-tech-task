@@ -3,43 +3,19 @@ import '@root/globals.css';
 import Header from './components/Header';
 import UserSearch from './components/UserSearch';
 import RepoList from './components/RepoList';
-import { useEffect, useMemo, useState } from 'react';
-import { mapGitHubRepos, type GitHubRepo, type Repo } from './types';
+import { useMemo, useState } from 'react';
 import Filters from './components/Filters';
 import { getLanguagesUsed } from './utils/helpers';
+import { useRepos } from './hooks/useRepos';
 
 function App() {
-  const [query, setQuery] = useState<string>('');
-  const [searchState, setSearchState] = useState<{ query: string }>({
-    query: '',
-  });
-  const [repos, setRepos] = useState<Repo[]>([]);
-  const [languages, setLanguages] = useState<string[]>([]);
+  const [inputQuery, setInputQuery] = useState<string>('');
+  const [submittedQuery, setSubmittedQuery] = useState<string>('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState('');
 
-  function resetState() {
-    setRepos([]);
-    setLanguages([]);
-    setSelectedLanguages([]);
-    setError('');
-  }
+  const { state: repos, isLoading } = useRepos(submittedQuery); // need languages too?
 
-  async function getRepos(): Promise<GitHubRepo[]> {
-    const url = `https://api.github.com/users/${searchState.query}/repos`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error(`User "${searchState.query}" not found`);
-      }
-      throw new Error('Failed to fetch repos');
-    }
-
-    return response.json();
-  }
+  const languagesUsed = getLanguagesUsed(repos); // wrap in useMemo
 
   const filteredRepos = useMemo(() => {
     if (selectedLanguages.length === 0) return repos;
@@ -59,38 +35,11 @@ function App() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSearchState({ query });
+    setSubmittedQuery(inputQuery);
   }
 
-  useEffect(() => {
-    if (!searchState.query) {
-      resetState();
-      return;
-    }
-
-    const fetchRepos = async () => {
-      setIsLoading(true);
-      resetState();
-
-      try {
-        const repos = await getRepos();
-        const mappedRepos = mapGitHubRepos(repos);
-        const languages = getLanguagesUsed(mappedRepos);
-
-        setRepos(mappedRepos);
-        setLanguages(languages);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRepos();
-  }, [searchState]);
-
   const renderContent = () => {
-    if (!searchState.query) {
+    if (!submittedQuery) {
       return (
         <section aria-label="Welcome">
           <h2>GitHub Repository Explorer</h2>
@@ -102,20 +51,18 @@ function App() {
       );
     }
 
-    if (error) {
-      return (
-        <section aria-label="Error">
-          <p role="alert">{error}</p>
-        </section>
-      );
-    }
+    // if (error) {
+    //   return (
+    //     <section aria-label="Error">
+    //       <p role="alert">{error}</p>
+    //     </section>
+    //   );
+    // }
 
     if (repos.length === 0 && !isLoading) {
       return (
         <section aria-label="No results">
-          <p role="alert">
-            No public repositories found for {searchState.query}
-          </p>
+          <p role="alert">No public repositories found for {submittedQuery}</p>
         </section>
       );
     }
@@ -123,11 +70,11 @@ function App() {
     if (!isLoading) {
       return (
         <section aria-label="Repository results">
-          <h2>Public Repositories by {searchState.query} </h2>
-          {languages.length > 0 && (
+          <h2>Public Repositories by {submittedQuery} </h2>
+          {languagesUsed.length > 0 && (
             <aside aria-label="Language filters">
               <Filters
-                languages={languages}
+                languages={languagesUsed}
                 handleToggle={handleToggle}
                 selectedLanguages={selectedLanguages}
               />
@@ -144,8 +91,8 @@ function App() {
       <Header />
       <main>
         <UserSearch
-          value={query}
-          onChange={setQuery}
+          value={inputQuery}
+          onChange={setInputQuery}
           onSubmit={handleSubmit}
           isLoading={isLoading}
         />
