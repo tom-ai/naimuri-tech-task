@@ -25,9 +25,9 @@ export function useRepos(
   const [state, setState] = useState<Repo | Repo[]>([]);
 
   useEffect(() => {
+    if (!userLogin) return;
     setIsLoading(true);
 
-    // if i have two args do this
     if (repositoryName) {
       RepoApi.getSingleRepositoryByUser(userLogin, 'naimuri-tech-task')
         .then((data) => {
@@ -41,7 +41,6 @@ export function useRepos(
           setIsLoading(false);
         });
     } else {
-      // if i have one arg do this
       RepoApi.getAllRepositoriesByUser(userLogin)
         .then((data) => {
           const mappedRepos = mapGitHubRepos(data);
