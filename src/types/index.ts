@@ -35,21 +35,3 @@ export type GitHubRepo = {
 };
 
 export type RepoLanguageOnly = Pick<Repo, 'language'>;
-
-export function mapGitHubRepos(repos: GitHubRepo[]): Repo[] {
-  return repos.map((repo) => ({
-    id: repo.id,
-    name: repo.name,
-    fullName: repo.full_name,
-    owner: {
-      login: repo.owner.login,
-      htmlUrl: repo.owner.html_url,
-    },
-    htmlUrl: repo.html_url,
-    description: repo.description,
-    forks: repo.forks_count,
-    stars: repo.stargazers_count,
-    issues: repo.open_issues_count,
-    language: repo.language,
-  }));
-}

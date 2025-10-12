@@ -1,41 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ReadmeDialog from './ReadmeDialog';
-import { mapGitHubRepos, type GitHubRepo, type Repo } from '@root/types';
+import { useRepos } from '@root/hooks/useRepos';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [repo, setRepo] = useState<Repo | null>(null);
-
-  async function getThisRepo(): Promise<GitHubRepo> {
-    const url = `https://api.github.com/repos/tom-ai/naimuri-tech-task`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error('Error fetching this repo');
-    }
-
-    return response.json();
-  }
-
-  useEffect(() => {
-    const fetchRepo = async () => {
-      setIsLoading(true);
-
-      try {
-        const repo = await getThisRepo();
-        const mappedRepo = mapGitHubRepos([repo]);
-        setRepo(mappedRepo[0]);
-      } catch (err) {
-        console.warn(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRepo();
-  }, []);
+  const { state: repo, isLoading } = useRepos('tom-ai', 'naimuri-tech-task');
 
   return (
     <header>
