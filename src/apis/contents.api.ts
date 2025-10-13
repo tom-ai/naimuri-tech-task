@@ -9,7 +9,6 @@ export class ContentsApi extends Api {
       'raw'
     );
 
-    if (!readme) throw new Error('Readme not found');
     return readme;
   }
 }

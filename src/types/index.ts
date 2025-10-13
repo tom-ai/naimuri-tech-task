@@ -1,6 +1,7 @@
 export type Owner = {
   login: string;
   htmlUrl: string;
+  name: string;
 };
 
 export type Repo = {
@@ -18,6 +19,7 @@ export type Repo = {
 
 type GitHubOwner = {
   login: string;
+  name: string;
   html_url: string;
 };
 

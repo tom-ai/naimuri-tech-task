@@ -4,6 +4,14 @@ This app allows you to search for a GitHub user and displays their public reposi
 
 Had fun with this one. Probably took a little longer than planned - there're just so many considerations!
 
+## Weekend additions
+
+Improved code maintainability by moving the fetch logic into it's own layer, and moved the fetching into a custom hook
+
+Using Axios to provide typed reponses and nicer DX.
+
+I just love having the api layer now. Makes sense, makes everything so much better,
+
 ## Running locally
 
 Download or clone the repository. Run `npm install` and run in development with `npm run dev`.

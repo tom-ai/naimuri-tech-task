@@ -25,6 +25,7 @@ export function mapGitHubRepos(
       owner: {
         login: repo.owner.login,
         htmlUrl: repo.owner.html_url,
+        name: repo.owner.name,
       },
       htmlUrl: repo.html_url,
       description: repo.description,

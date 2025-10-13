@@ -5,7 +5,7 @@ export class RepoApi extends Api {
   static async getAllRepositoriesByUser(login: string): Promise<GitHubRepo[]> {
     const repositories = await this.get<GitHubRepo[]>(`/users/${login}/repos`); // make generic
 
-    if (!repositories) throw new Error('Repositories not found');
+    // if (!repositories) throw new Error('Repositories not found');
     return repositories;
   }
 
@@ -15,7 +15,7 @@ export class RepoApi extends Api {
   ): Promise<T> {
     const repository = await this.get<T>(`/repos/${login}/${repoName}`);
 
-    if (!repository) throw new Error('Repository not found');
+    // if (!repository) throw new Error('Repository not found');
     return repository;
   }
 }

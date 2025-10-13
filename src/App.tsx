@@ -13,7 +13,7 @@ function App() {
   const [submittedQuery, setSubmittedQuery] = useState<string>('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
-  const { state: repos, isLoading } = useRepos(submittedQuery); // need languages too?
+  const { state: repos, isLoading, error } = useRepos(submittedQuery);
 
   const languagesUsed = getLanguagesUsed(repos); // wrap in useMemo
 
@@ -35,6 +35,8 @@ function App() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // get user here then fetch repos
     setSubmittedQuery(inputQuery);
   }
 
@@ -51,13 +53,13 @@ function App() {
       );
     }
 
-    // if (error) {
-    //   return (
-    //     <section aria-label="Error">
-    //       <p role="alert">{error}</p>
-    //     </section>
-    //   );
-    // }
+    if (error) {
+      return (
+        <section aria-label="Error">
+          <p role="alert">{error.message}</p>
+        </section>
+      );
+    }
 
     if (repos.length === 0 && !isLoading) {
       return (
