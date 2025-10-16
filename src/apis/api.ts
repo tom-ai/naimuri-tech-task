@@ -21,9 +21,6 @@ export class Api {
           : undefined,
     };
 
-    // const response = await axios.get<T>(url, config);
-    // return response.data;
-
     try {
       const response = await axios.get<T>(url, config);
       return response.data;

@@ -35,7 +35,7 @@ export function useRepos(
     setError(null);
 
     if (repositoryName) {
-      RepoApi.getSingleRepositoryByUser(userLogin, 'naimuri-tech-task')
+      RepoApi.getSingleRepositoryByUser(userLogin, repositoryName)
         .then((data) => {
           const mappedRepo = mapGitHubRepos(data);
           setState(mappedRepo);

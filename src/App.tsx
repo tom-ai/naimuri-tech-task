@@ -36,7 +36,7 @@ function App() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // get user here then fetch repos
+    // todo: get user here then fetch repos
     setSubmittedQuery(inputQuery);
   }
 

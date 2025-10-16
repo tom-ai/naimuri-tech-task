@@ -5,7 +5,6 @@ import { useRepos } from '@root/hooks/useRepos';
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // get me
   const { state: repo, isLoading } = useRepos('tom-ai', 'naimuri-tech-task');
 
   return (

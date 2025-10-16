@@ -10,8 +10,6 @@ Improved code maintainability by moving the fetch logic into it's own layer, and
 
 Using Axios to provide typed reponses and nicer DX.
 
-I just love having the api layer now. Makes sense, makes everything so much better,
-
 ## Running locally
 
 Download or clone the repository. Run `npm install` and run in development with `npm run dev`.
@@ -22,10 +20,13 @@ Or visit the hosted version at https://naimuri-tech-task.pages.dev
 
 - Paginate results from the API
 - Add validation around the username. Probably build a nice URL-username parser.
-- Add tests around the data fetching (probably refactoring with custom React hooks)
+- Implement better state management like Zustand
+- Fetch the user first before fetching repos.
+- Improve accesibility in the readme viewer
+- Add tests around the data fetching and custom hooks.
 - Utilise URL Params to hold state (userId, modal open, filters selected, etc).
 - Utilise more typescript generics for data fetchers and DRY code
-- handled error messages more gracefully.
+- Improve error handling and provide better UX around the errors.
 
 ## In the real world, this application would...
 
@@ -34,6 +35,7 @@ Or visit the hosted version at https://naimuri-tech-task.pages.dev
 - have unit tests for all components and hooks, and integration tests
 - use an access token to facilitate more read limits
 - be styled properly
+- and lots more!
 
 ## My Approach
 
